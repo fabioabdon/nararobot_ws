@@ -1,0 +1,53 @@
+<launch>
+    <!-- Start ROS communication between the robot's computer and Linorobot base -->
+    <node pkg="rosserial_python" name="rosserial_lino" type="serial_node.py" output="screen">
+        <param name="port" value="/dev/ttyUSB0" />
+        <param name="baud" value="57600" />
+    </node>
+
+
+   
+
+    <!-- Publish Linorobot odometry -->
+    <node pkg="linorobot" name="lino_base_node" type="lino_base_node"></node>
+
+    <!-- Publish static transform from base_footprint to base_link -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_base_link" args="0 0 0 0 0 0  /base_footprint /base_link"/>
+
+
+    <!-- Publish static transform from base_footprint to base_link -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_zed2_base_link" args="0 0 0 0 0 0  /base_link /zed2_base_link"/>
+
+
+     <!-- Run Linorobot compatible laser drivers -->
+    <include file="$(find zed_wrapper)/launch/zed2.launch" />
+
+
+
+
+    <!-- Odom-IMU Extended Kalman Filter-->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"> 
+        <remap from="odometry/filtered" to="odom" />
+        <rosparam command="load" file="$(find linorobot)/param/ekf/robot_localization_zed.yaml" />
+    </node>
+
+
+
+     <!-- Run Linorobot compatible laser drivers -->
+    <include file="$(find linorobot)/launch/include/laser.launch" />
+
+
+    <!-- Send fake joint values-->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="use_gui" value="false"/>
+    </node>
+  
+    <!-- Send robot states to tf -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"/>
+
+    <!-- send urdf to param server -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find linorobot)/urdf/b400wheelchair.xacro'" />
+
+
+    
+</launch>

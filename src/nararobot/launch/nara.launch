@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find nararobot)/launch/bringup.launch" />
+    <include file="$(find nararobot)/launch/navigate.launch" />
+
+    <node pkg="rviz" type="rviz" name="nara_rviz" args="-d $(find nararobot)/rviz/navigate.rviz"/>
+
+</launch>

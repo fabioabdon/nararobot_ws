@@ -1,0 +1,46 @@
+<launch>
+    <!-- Start ROS communication between the robot's computer and nararobot base -->
+    <node pkg="rosserial_python" name="rosserial_nara" type="serial_node.py" output="screen">
+        <param name="port" value="/dev/ttyUSB0" />
+        <param name="baud" value="57600" />
+    </node>
+
+
+       <!-- IMU Relay and Filter -->
+    <include file="$(find nararobot)/launch/include/imu/imu.launch" />
+
+    <!-- Publish nararobot odometry -->
+    <node pkg="nararobot" name="nara_base_node" type="nara_base_node"></node>
+
+    <!-- Publish static transform from base_footprint to base_link -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_base_link" args="0 0 0 0 0 0  /base_footprint /base_link"/>
+
+
+
+
+    <!-- Odom-IMU Extended Kalman Filter-->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"> 
+        <remap from="odometry/filtered" to="odom" />
+        <rosparam command="load" file="$(find nararobot)/param/ekf/robot_localization.yaml" />
+    </node>
+
+
+
+     <!-- Run nararobot compatible laser drivers -->
+    <include file="$(find nararobot)/launch/include/laser.launch" />
+
+
+    <!-- Send fake joint values-->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="use_gui" value="false"/>
+    </node>
+  
+    <!-- Send robot states to tf -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"/>
+
+    <!-- send urdf to param server -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find nararobot)/urdf/b400wheelchair.xacro'" />
+
+
+    
+</launch>
