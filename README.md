@@ -21,8 +21,8 @@ git clone https://github.com/fabioabdon/nararobot_ws.git
 ### 3.2 Instale os repositórios necessários
 
 ```
-cd lino_install
-./install <base> <sensor>
+cd nara_install
+./install
 ```
 
 ### 3.3 Carregando o código para o Arduino
