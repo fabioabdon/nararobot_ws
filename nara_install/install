@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+set -e
+
+source /opt/ros/$(dir /opt/ros)/setup.bash
+
+ROSDISTRO="$(rosversion -d)"
+
+ARCH="$(uname -m)"
+echo $ARCH
+echo "
+                                                             
+______________███╗   ██╗ █████╗ ██████╗  █████╗     ██████╗ ______________
+______________████╗  ██║██╔══██╗██╔══██╗██╔══██╗    ╚════██╗______________
+______________██╔██╗ ██║███████║██████╔╝███████║     █████╔╝______________
+______________██║╚██╗██║██╔══██║██╔══██╗██╔══██║    ██╔═══╝ ______________
+______________██║ ╚████║██║  ██║██║  ██║██║  ██║    ███████╗______________
+______________╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══════╝______________
+                                                             
+                                                             
+
+
+
+"
+
+echo
+echo -n "Voce esta instalando ROS-$ROSDISTRO NARA2. Aperte [s] para continuar. " 
+read reply
+if [[ "$reply" != "s" && "$reply" != "S" ]]
+    then
+        echo "Wrong input. Exiting now"
+        exit 1
+fi
+
+
+echo
+echo "INSTALANDO...."
+echo
+
+sudo apt-get update
+sudo apt-get install -y \
+avahi-daemon \
+openssh-server \
+python-setuptools \
+python-dev \
+build-essential
+
+source /opt/ros/$ROSDISTRO/setup.bash
+
+
+sudo apt-get install -y \
+ros-$ROSDISTRO-roslint \
+ros-$ROSDISTRO-rosserial \
+ros-$ROSDISTRO-rosserial-arduino \
+ros-$ROSDISTRO-imu-filter-madgwick \
+ros-$ROSDISTRO-gmapping \
+ros-$ROSDISTRO-map-server \
+ros-$ROSDISTRO-navigation \
+ros-$ROSDISTRO-robot-localization \
+ros-$ROSDISTRO-tf2 \
+ros-$ROSDISTRO-tf2-ros 
+sudo apt-get install -y ros-$ROSDISTRO-rplidar-ros
+
+cd $HOME
+git clone https://github.com/fabioabdon/nararobot_ws.git
+
+cd $HOME/nara2_ws/src/nararobot
+TRAVIS_BRANCH="echo $TRAVIS_BRANCH"
+if [ "$TRAVIS_BRANCH" = "devel" ]; then git checkout devel; fi
+
+
+
+echo "source $HOME/nararobot_ws/devel/setup.bash" >> $HOME/.bashrc
+source $HOME/.bashrc
+
+cd $HOME/nararobot_ws
+catkin_make --pkg nara_msgs
+catkin_make
+
+echo
+echo "INSTALACAO FINALIZADA!"
+echo
