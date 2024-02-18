@@ -61,10 +61,7 @@ ros-$ROSDISTRO-tf2 \
 ros-$ROSDISTRO-tf2-ros 
 sudo apt-get install -y ros-$ROSDISTRO-rplidar-ros
 
-cd $HOME
-git clone https://github.com/fabioabdon/nararobot_ws.git
-
-cd $HOME/nara2_ws/src/nararobot
+cd $HOME/nararobot_ws/src/nararobot
 TRAVIS_BRANCH="echo $TRAVIS_BRANCH"
 if [ "$TRAVIS_BRANCH" = "devel" ]; then git checkout devel; fi
 
