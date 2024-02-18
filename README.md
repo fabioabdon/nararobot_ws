@@ -20,6 +20,8 @@ git clone https://github.com/fabioabdon/nararobot_ws.git
 
 ### 3.2 Instale os repositórios necessários
 
+Clique com o botão direito sobre o arquivo install, em seguida selecione a guia "permissões" e marque a caixa "Permitir execução do arquivo como um programa".
+
 ```
 cd nara_install
 ./install
